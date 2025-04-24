@@ -22,10 +22,9 @@ try{
         }
         //require_once 'includes/config_session-inc.php';
 
-        $stmt = $conn->prepare("SELECT user_id, username, pword FROM app_users WHERE username = :username");
+        $stmt = $conn->prepare("SELECT a.user_id, a.username, a.pword, ut.type_name FROM app_users a JOIN user_types ut ON a.type_id = ut.type_id WHERE username = :username");
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
 
 
         if (!password_verify($password, $user['PWORD'])) {
@@ -41,12 +40,13 @@ try{
 
         $_SESSION['user_id'] = $user['USER_ID'];
         $_SESSION['username'] = $user['USERNAME'];
+        $_SESSION['user_type'] = $user['TYPE_NAME'];
 
         echo '<p class="success-text">Sikeres bejelentkezés! Átirányítás a kezdőlapra...</p>';
         echo "<script>
         setTimeout(function() {
             window.location.href = '/untitled/index.php?page=home';
-        }, 1500);
+        }, 300);
         </script>";
 
         exit();

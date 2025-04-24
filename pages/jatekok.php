@@ -19,55 +19,53 @@
 
 </div>
 
-<div class="video-grid">
-    <div class="video-card">
-        <a href="index.php?page=watch&id=21" class="page-link" data-page="watch" data-id="21">
-            <div class="thumbnail">
-                <img src="images/placeholder-21.jpg" alt="Video thumbnail">
-                <div class="video-duration">8:20</div>
-            </div>
-            <div class="video-info">
-                <h3 class="video-title">Top 10 indie játék 2025-ben</h3>
-                <div class="video-meta">
-                    <span class="channel-name">GameGuru</span>
-                    <span>• 67K views</span>
-                    <span>• 5 napja</span>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="video-card">
-        <a href="index.php?page=watch&id=22" class="page-link" data-page="watch" data-id="22">
-            <div class="thumbnail">
-                <img src="images/placeholder-22.jpg" alt="Video thumbnail">
-                <div class="video-duration">10:45</div>
-            </div>
-            <div class="video-info">
-                <h3 class="video-title">Fortnite új szezon bemutató</h3>
-                <div class="video-meta">
-                    <span class="channel-name">EpicPlayer</span>
-                    <span>• 105K views</span>
-                    <span>• 2 napja</span>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="video-card">
-        <a href="index.php?page=watch&id=23" class="page-link" data-page="watch" data-id="23">
-            <div class="thumbnail">
-                <img src="images/placeholder-23.jpg" alt="Video thumbnail">
-                <div class="video-duration">6:50</div>
-            </div>
-            <div class="video-info">
-                <h3 class="video-title">Hogyan nyerd meg az első ranked meccsed</h3>
-                <div class="video-meta">
-                    <span class="channel-name">NoobToPro</span>
-                    <span>• 8K views</span>
-                    <span>• 3 órája</span>
-                </div>
-            </div>
-        </a>
-    </div>
+<?php
+require_once "includes/dbh-inc.php";
+$conn = getConnection();
 
-    <!-- More videos would go here -->
+$sql = "SELECT 
+            v.video_id,
+            v.uploader_user_id,
+            v.title,
+            TO_CHAR(v.upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_time,
+            v.views,
+            u.username,
+            c.category_name
+        FROM videos v
+        JOIN app_users u ON v.uploader_user_id = u.user_id
+        JOIN categories c ON v.category_id = c.category_id";
+
+$stmt = $conn->query($sql);
+$videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
+
+<div class="video-grid">
+
+    <?php foreach ($videos as $video): ?>
+        <?php
+        $rawTimestamp = $video['UPLOAD_TIME'];// pl. "2025-04-22 16:38:57.123456"
+        $datetime = new DateTime($rawTimestamp);
+        ?>
+        <?php if($video["CATEGORY_NAME"] == "Játékok"): ?>
+            <div class="video-card">
+                <a href="index.php?page=watch&id=<?= $video['VIDEO_ID'] ?>" class="page-link" data-page="watch" data-id="<?= $video['VIDEO_ID'] ?>">
+                    <!--<div class="thumbnail">
+                    <img src="images/placeholder.jpg" alt="Video thumbnail">
+                    <div class="video-duration">2:30</div> ezt később ki lehet számolni vagy lekérni is
+                    </div>-->
+                    <div class="video-info">
+                        <h3 class="video-title"><?= htmlspecialchars($video['TITLE']) ?></h3>
+                        <div class="video-meta">
+                            <span class="channel-name"><?= $video['USERNAME'] ?> </span>
+                            <span>• <?= number_format($video['VIEWS']) ?>  </span>
+                            <span>• <?= $datetime->format('Y-m-d'); ?></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
+
 </div>

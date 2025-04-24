@@ -1,23 +1,9 @@
-<h1>Kezdőlap</h1>
-
-<div class="categories">
-    <a href="index.php?page=home&category=all"><div class="category active">All</div></a>
-    <?php
-    require_once "includes/dbh-inc.php";
-    $conn = getConnection();
-
-    $stmt = $conn->query("SELECT category_id, category_name FROM categories ORDER BY category_name ASC");
-    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($categories as $category): ?>
-        <a href="index.php?page=home&category=<?= $category['CATEGORY_ID'] ?>"><div class="category"><?= htmlspecialchars($category['CATEGORY_NAME']) ?></div></a>
-    <?php endforeach; ?>
-
-</div>
-
 <?php
-require_once "includes/dbh-inc.php";
+
+require_once 'includes/dbh-inc.php';
 $conn = getConnection();
+
+$search_string = $_GET['q'];
 
 $sql = "SELECT 
             v.video_id,
@@ -27,19 +13,23 @@ $sql = "SELECT
             v.views,
             u.username
         FROM videos v
-        JOIN app_users u ON v.uploader_user_id = u.user_id";
+        JOIN app_users u ON v.uploader_user_id = u.user_id
+        WHERE LOWER(v.title) LIKE '%' || LOWER(:search_string) || '%'";
 
-$stmt = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':search_string', $search_string);
+$stmt->execute();
 $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
-<div class="video-grid">
 
+<div class="container">
+    <div class="form-group">
     <?php foreach ($videos as $video): ?>
         <?php
-            $rawTimestamp = $video['UPLOAD_TIME'];// pl. "2025-04-22 16:38:57.123456"
-            $datetime = new DateTime($rawTimestamp);
+        $rawTimestamp = $video['UPLOAD_TIME'];// pl. "2025-04-22 16:38:57.123456"
+        $datetime = new DateTime($rawTimestamp);
         ?>
         <div class="video-card">
             <a href="index.php?page=watch&id=<?= $video['VIDEO_ID'] ?>" class="page-link" data-page="watch" data-id="<?= $video['VIDEO_ID'] ?>">
@@ -58,5 +48,13 @@ $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
         </div>
     <?php endforeach; ?>
+    </div>
+
+    <div class="form-group">
+        <a href="index.php?page=home"><button type="button" class="btn">Kezdőlapra vissza</button></a>
+    </div>
+
 
 </div>
+
+

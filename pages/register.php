@@ -46,7 +46,7 @@ try{
         registerUser($conn, $username, password_hash($password, PASSWORD_DEFAULT));
         $_SESSION['success_signup'] = true;
 
-        $query_of_current_user_id = "SELECT user_id FROM app_users WHERE username = :username";
+        $query_of_current_user_id = "SELECT a.user_id, ut.type_name FROM app_users a JOIN user_types ut ON a.type_id = ut.type_id WHERE username = :username";
         $stmt_userid = $conn->prepare($query_of_current_user_id);
         $stmt_userid->bindParam(':username', $username);
         $stmt_userid->execute();
@@ -54,8 +54,10 @@ try{
         $userid = null;
         if ($row = $stmt_userid->fetch(PDO::FETCH_ASSOC)) {
             $userid = $row['USER_ID'];
+            $user_type = $row['TYPE_NAME'];
             $_SESSION['user_id'] = $userid; // replace with real ID
             $_SESSION['username'] = $username;
+            $_SESSION['user_type'] = $user_type;
         } else {
             echo "User not found.";
         }

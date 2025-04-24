@@ -7,7 +7,7 @@ function getConnection() {
 
     $db_username = getenv('DB_USERNAME');
     $db_password = getenv('DB_PASSWORD');
-    
+
     //.env mukodes teszt
     //echo "User: " . $db_username . "<br>";
     //echo "Pass: " . $db_password . "<br>";

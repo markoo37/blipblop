@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #f9f9f9;
+    background-color: #ECECEC;
     color: #333;
     line-height: 1.6;
 }
@@ -98,14 +98,16 @@ main {
 
 .video-card {
     background: white;
+    /*border: 0.1px solid #d32f2f;*/
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s;
 }
 
 .video-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+
 }
 
 .thumbnail {
@@ -156,6 +158,7 @@ main {
 
 .channel-name {
     margin-right: 8px;
+    font-weight: bold;
 }
 
 /* Categories */
@@ -436,4 +439,225 @@ footer {
 .dropdown:hover .dropdown-content,
 .dropdown-content:hover {
     display: flex;
+}
+
+.video-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.video-meta span {
+    white-space: nowrap;
+}
+
+.video-card {
+    display: inline-block;
+    margin: 8px;
+    font-family: sans-serif;
+
+    /* base styles… */
+}
+
+.video-card.small {
+    width: 180px;                 /* smaller overall width */
+    font-size: 0.85rem;
+    /* scale down text */
+}
+
+.video-card.small .thumbnail {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;          /* 16:9 aspect ratio */
+    overflow: hidden;
+}
+
+.video-card.small .thumbnail img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-card.small .video-duration {
+    position: absolute;
+    bottom: 4px; right: 4px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+.video-card.small .video-info {
+    padding: 6px 4px;
+}
+
+.video-card.small .video-title {
+    margin: 0 0 4px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    height: 2.4rem;               /* limit to 2 lines */
+    overflow: hidden;
+}
+
+.video-card.small .video-meta {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.video-card.small .video-meta .channel-name {
+    font-weight: bold;
+}
+
+.nav-links .btn {
+    color: white;
+}
+
+.nav-links .btn:hover {
+    color: white;
+    background-color: black;
+}
+
+/* Több tér a Rólunk oldal szövegei között */
+.about p {
+    margin-bottom: 1.5rem;
+}
+
+.about h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Video-kártyák közti nagyobb hézag */
+.about .video-grid {
+    gap: 30px;  /* alapból 20px volt */
+}
+
+/* Egy kis extra alsó margó egyes kártyáknak */
+.about .video-card {
+    margin-bottom: 1.5rem;
+}
+
+/* Több tér a főcímsor alatt/fölött */
+.about h1 {
+    margin-top: 2rem;    /* extra hely a cím fölött */
+    margin-bottom: 2rem; /* extra hely a cím alatt */
+}
+
+/* Admin Panel tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+th {
+    background-color: #ECECEC;  /* same as your section BG */
+    font-weight: 600;
+}
+.actions .btn {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    margin-right: 4px;
+}
+
+.form-group.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Navbar kereső */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.search-form {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.search-form input[type="search"] {
+    border: none;
+    padding: 6px 8px;
+    width: 140px;
+}
+.search-form input[type="search"]:focus {
+    outline: none;
+}
+.search-form button {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+.search-form button i {
+    font-size: 1rem;
+    color: #555;
+}
+
+.video-player {
+    margin-bottom: 2rem;
+}
+.video-player h1 {
+    margin-bottom: 1rem;
+}
+.video-player .meta {
+    margin-top: .5rem;
+    color: #777;
+    font-size: .9rem;
+}
+
+.comments {
+    margin-top: 2rem;
+}
+.comment {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+.comment .timestamp {
+    float: right;
+    color: #999;
+    font-size: .85rem;
+}
+
+.comment-form .form-group {
+    margin-bottom: 1rem;
+}
+.comment-form textarea {
+    width: 100%;
+    padding: .5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+.comment-form button {
+    padding: .5rem 1rem;
+}
+
+.video-player .meta {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    margin-top: 0.75rem;
 }
