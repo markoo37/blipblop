@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     if ($errors){
         $_SESSION['error_modify'] = $errors;
-        header("Location: /untitled/index.php?page=edituser&id=$id_of_selected_user");
+        header("Location: /blipblop/index.php?page=edituser&id=$id_of_selected_user");
 
         die();
     }

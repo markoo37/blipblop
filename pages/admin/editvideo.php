@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['new_title'])){
 
     if ($errors){
         $_SESSION['error_modify_video'] = $errors;
-        header("Location: /untitled/index.php?page=editvideo&id=$id_of_selected_video");
+        header("Location: /blipblop/index.php?page=editvideo&id=$id_of_selected_video");
 
         die();
     }
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['new_title'])){
     echo '<p class="success-text">Sikeres módosítás! Vissza a kezdőlapra...</p>';
     echo "<script>
         setTimeout(function() {
-            window.location.href = '/untitled/index.php?page=home';
+            window.location.href = '/blipblop/index.php?page=home';
         }, 1500);
         </script>";
 
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['type'])){
     $stmt_delcom->bindParam(':id', $comment_id);
     $stmt_delcom->execute();
 
-    header("Location: /untitled/index.php?page=editvideo&id=$id_of_selected_video");
+    header("Location: /blipblop/index.php?page=editvideo&id=$id_of_selected_video");
 }
 
 

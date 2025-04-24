@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['typ
             $stmt = $conn->prepare('DELETE FROM videos WHERE video_id = :id');
         }
         $stmt->execute([':id' => $id]);
-        header("Location: /untitled/index.php?page=home");
+        header("Location: /blipblop/index.php?page=home");
         exit;
     }
 }

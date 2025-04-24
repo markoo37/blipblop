@@ -47,7 +47,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $uploadcomment_stmt->bindParam(':comment_text', $comment_text);
     $uploadcomment_stmt->execute();
 
-    header("Location: /untitled/index.php?page=watch&id=$video_id");
+    header("Location: /blipblop/index.php?page=watch&id=$video_id");
     exit();
 
 }

@@ -33,7 +33,7 @@ try{
 
         if ($errors){
             $_SESSION['error_login'] = $errors;
-            header("Location: /untitled/index.php?page=login");
+            header("Location: /blipblop/index.php?page=login");
 
             die();
         }
@@ -45,7 +45,7 @@ try{
         echo '<p class="success-text">Sikeres bejelentkezés! Átirányítás a kezdőlapra...</p>';
         echo "<script>
         setTimeout(function() {
-            window.location.href = '/untitled/index.php?page=home';
+            window.location.href = '/blipblop/index.php?page=home';
         }, 300);
         </script>";
 

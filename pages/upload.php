@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt_upload_video->bindParam(':category_id', $category_id);
     $stmt_upload_video->execute();
 
-    header("Location: /untitled/index.php?page=account");
+    header("Location: /blipblop/index.php?page=account");
     exit();
 
 }
