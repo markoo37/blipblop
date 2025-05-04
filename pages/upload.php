@@ -4,7 +4,7 @@ $conn = getConnection();
 
 // Csak bejelentkezett felhasználó tölthet fel
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /blipblop/index.php?page=login');
+    header('Location: index.php?page=login');
     exit;
 }
 
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             $stmt->bindParam(':video_id', $last);
             $stmt->execute();
 
-            header('Location: /blipblop/index.php?page=home');
+            header('Location: index.php?page=home');
             exit;
         }
     }

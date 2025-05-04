@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':video_id' => $video_id
         ]);
         // vissza a kommentekhez
-        header("Location: /blipblop/index.php?page=watch&id=$video_id#comments");
+        header("Location: index.php?page=watch&id=$video_id#comments");
         exit;
     }
 
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $del = $conn->prepare("DELETE FROM videos WHERE video_id = :video_id");
         $del->bindParam(':video_id', $video_id, PDO::PARAM_INT);
         $del->execute();
-        header("Location: /blipblop/index.php?page=home");
+        header("Location: index.php?page=home");
         exit();
     }
 
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadcomment_stmt->execute();
     }
     // Oldal újratöltése friss adatokkal
-    header("Location: /blipblop/index.php?page=watch&id=$video_id#meta");
+    header("Location: index.php?page=watch&id=$video_id#meta");
     exit();
 }
 

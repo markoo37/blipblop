@@ -38,7 +38,7 @@ try{
 
         if ($errors){
             $_SESSION['error_signup'] = $errors;
-            header("Location: /blipblop/index.php?page=register");
+            header("Location: index.php?page=register");
 
             die();
         }
@@ -65,7 +65,7 @@ try{
         echo '<p class="success-text">Sikeres regisztáció! Átirányítás a kezdőlapra...</p>';
         echo "<script>
         setTimeout(function() {
-            window.location.href = '/blipblop/index.php?page=home';
+            window.location.href = 'index.php?page=home';
         }, 1500);
         </script>";
 

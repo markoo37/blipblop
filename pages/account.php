@@ -1,7 +1,7 @@
 <?php
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /blipblop/index.php?page=login");
+    header("Location: index.php?page=login");
     exit();
 }
 
@@ -82,7 +82,7 @@ try{
 
         if ($errors){
             $_SESSION['error_new_password'] = $errors;
-            header("Location: /blipblop/index.php?page=account");
+            header("Location: index.php?page=account");
 
             die();
         }
@@ -95,7 +95,7 @@ try{
         echo '<p class="success-text">A jelszó sikeresen megváltoztatva! Átirányítás a kezdőlapra...</p>';
         echo "<script>
             setTimeout(function() {
-                window.location.href = '/blipblop/index.php?page=home';
+                window.location.href = 'index.php?page=home';
                 }, 1500);
             </script>";
 

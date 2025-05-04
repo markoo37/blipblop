@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $delList->execute();
 
         // 3) Visszairányítás a saját listák oldalára
-        header("Location: /blipblop/index.php?page=playlists");
+        header("Location: index.php?page=playlists");
         exit;
     }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $del->bindParam(':playlist_id', $playlist_id,      PDO::PARAM_INT);
         $del->bindParam(':video_id',    $video_to_remove, PDO::PARAM_INT);
         $del->execute();
-        header("Location: /blipblop/index.php?page=view_playlist&id={$playlist_id}");
+        header("Location: index.php?page=view_playlist&id={$playlist_id}");
         exit;
     }
     // Új videó hozzáadása
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $insert->bindParam(':video_id',    $video_id_to_add, PDO::PARAM_INT);
             $insert->execute();
         }
-        header("Location: /blipblop/index.php?page=view_playlist&id={$playlist_id}");
+        header("Location: index.php?page=view_playlist&id={$playlist_id}");
         exit;
     }
 }

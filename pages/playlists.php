@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_playlist'])) {
         $st->bindParam(':list_name', $name, PDO::PARAM_STR);
         $st->execute();
         // oldal újratöltése, hogy az új lista is megjelenjen
-        header("Location: /blipblop/index.php?page=playlists");
+        header("Location: index.php?page=playlists");
         exit;
     }
 }
@@ -47,6 +47,7 @@ $playlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
             Létrehozás
         </button>
     </form>
+    <h1>Lejátszási listáid:</h1>
     <h1>Lejátszási listáid:</h1>
     <!-- ─────────── Létező listák megjelenítése ─────────── -->
     <div class="playlist-grid">
