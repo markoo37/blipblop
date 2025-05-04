@@ -87,6 +87,8 @@ else:
                 v.video_id,
                 v.uploader_user_id,
                 v.title,
+                v.thumbnail_path,
+                v.duration_secs,
                 TO_CHAR(v.upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_time,
                 v.views,
                 u.username,
@@ -104,17 +106,23 @@ else:
     }
     $stmt->execute();
     $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
     ?>
 
     <div class="video-grid">
         <?php foreach ($videos as $video):
             $dt = new DateTime($video['UPLOAD_TIME']);
+            $secs = $video['DURATION_SECS'];
+            $m = floor($secs / 60);
+            $s = $secs % 60;
+            $formatted = sprintf('%d:%02d', $m, $s);
             ?>
             <div class="video-card">
                 <a href="index.php?page=watch&id=<?= $video['VIDEO_ID'] ?>">
                     <div class="thumbnail">
-                        <img src="/images/elementor-placeholder-image.jpg" alt="Video thumbnail">
-                        <div class="video-duration">2:30</div>
+                        <img src="<?= htmlspecialchars($video['THUMBNAIL_PATH'] ?: "/images/elementor-placeholder-image.jpg") ?>"   alt="Video thumbnail">
+                        <div class="video-duration"><?= htmlspecialchars($formatted) ?></div>
                     </div>
                     <div class="video-info">
                         <h3 class="video-title"><?= htmlspecialchars($video['TITLE']) ?></h3>

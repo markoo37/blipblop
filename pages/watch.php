@@ -6,7 +6,7 @@ $conn = getConnection();
 $video_id = $_GET['id'];
 
 // 1. Videó metaadatok lekérdezése
-$video_sql = "SELECT a.username, v.title, TO_CHAR(v.upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_time, v.views, v.uploader_user_id, cat.category_name
+$video_sql = "SELECT a.username, v.title, v.file_path, v.thumbnail_path, v.duration_secs, TO_CHAR(v.upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_time, v.views, v.uploader_user_id, cat.category_name
               FROM videos v
               JOIN app_users a ON v.uploader_user_id = a.user_id
               JOIN categories cat ON v.category_id = cat.category_id
@@ -16,11 +16,16 @@ $stmt_video->bindParam(':video_id', $video_id);
 $stmt_video->execute();
 $video = $stmt_video->fetch(PDO::FETCH_ASSOC);
 
+$secs = $video['DURATION_SECS'];
+$m = floor($secs / 60);
+$s = $secs % 60;
+$formatted = sprintf('%d:%02d', $m, $s);
+
 $isOwner = isset($_SESSION['user_id'])
     && $_SESSION['user_id'] == $video['UPLOADER_USER_ID'];
 
 // 2. Kommentek lekérdezése
-$comments_sql = "SELECT a.username, c.comment_text, TO_CHAR(c.comment_time, 'YYYY-MM-DD HH24:MI:SS') AS comment_time
+$comments_sql = "SELECT c.comment_id, c.user_id AS comment_user, a.username, c.comment_text, TO_CHAR(c.comment_time, 'YYYY-MM-DD HH24:MI:SS') AS comment_time
                  FROM comments c
                  JOIN app_users a ON c.user_id = a.user_id
                  WHERE c.video_id = :video_id
@@ -55,7 +60,41 @@ if (isset($_SESSION['user_id'])) {
 // 5. POST feldolgozás: like/unlike vagy komment küldés
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    if (isset($_POST['delete_comment']) && isset($_SESSION['user_id'])) {
+        $cid = (int)$_POST['delete_comment'];
+        // csak a saját komment törlése
+        $delC = $conn->prepare(
+            "DELETE FROM comments 
+             WHERE comment_id = :comment_id 
+               AND user_id = :user_id 
+               AND video_id = :video_id"
+        );
+        $delC->execute([
+            ':comment_id' => $cid,
+            ':user_id' => $_SESSION['user_id'],
+            ':video_id' => $video_id
+        ]);
+        // vissza a kommentekhez
+        header("Location: /blipblop/index.php?page=watch&id=$video_id#comments");
+        exit;
+    }
+
     if(isset($_POST['delete_video']) && $isOwner){
+
+        // 1) Fizikai videófájl törlése
+        $videoFile = __DIR__ . '/../' . $video['FILE_PATH'];
+        if (is_file($videoFile)) {
+            unlink($videoFile);
+        }
+
+        // 2) Fizikai thumbnail törlése (ha van)
+        if (!empty($video['THUMBNAIL_PATH'])) {
+            $thumbFile = __DIR__ . '/../' . $video['THUMBNAIL_PATH'];
+            if (is_file($thumbFile)) {
+                unlink($thumbFile);
+            }
+        }
+
         $del = $conn->prepare("DELETE FROM videos WHERE video_id = :video_id");
         $del->bindParam(':video_id', $video_id, PDO::PARAM_INT);
         $del->execute();
@@ -104,8 +143,13 @@ $datetime = new DateTime($rts);
 <div class="container">
     <div class="video-player">
         <h1><?= htmlspecialchars($video['TITLE']) ?></h1>
-        <video controls width="100%">
-            <!-- Video forrása ide kerül majd -->
+        <video controls width="100%"
+            <?php if (isset($video['FILE_PATH'])): ?>
+                src="<?= htmlspecialchars($video['FILE_PATH']) ?>"
+            <?php endif; ?>
+        >
+            <!-- Ha több formátumot is támogatnál, forrásként beletehetsz további <source> tageket -->
+            Your browser does not support HTML5 video.
         </video>
         <p id="meta" class="meta">
             Feltöltő: <?= htmlspecialchars($video['USERNAME']) ?> |
@@ -152,18 +196,28 @@ $datetime = new DateTime($rts);
 
     </div>
 
-    <section class="comments">
+    <section id="comments" class="comments">
         <h2>Hozzászólások (<?= count($comments) ?>)</h2>
 
-        <?php if (count($comments) === 0): ?>
+        <?php if (empty($comments)): ?>
             <p>Még nincs hozzászólás ehhez a videóhoz.</p>
         <?php else: ?>
-            <?php foreach ($comments as $c): ?>
-                <?php $dt = new DateTime($c['COMMENT_TIME']); ?>
+            <?php foreach ($comments as $c):
+                $dt = new DateTime($c['COMMENT_TIME']);
+                $isMine = isset($_SESSION['user_id']) && $_SESSION['user_id']==$c['COMMENT_USER'];
+                ?>
                 <div class="comment">
                     <strong><?= htmlspecialchars($c['USERNAME']) ?></strong>
-                    <span class="timestamp"><?= $dt->format('l, j. F Y H:i'); ?></span>
+                    <span class="timestamp"><?= $dt->format('l, j. F Y H:i') ?></span>
                     <p><?= htmlspecialchars($c['COMMENT_TEXT']) ?></p>
+
+                    <?php if ($isMine): // csak a saját kommenthez ?>
+                        <form method="POST" class="delete-comment-form"
+                              onsubmit="return confirm('Biztosan törlöd ezt a kommentet?');">
+                            <input type="hidden" name="delete_comment" value="<?= $c['COMMENT_ID'] ?>">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">🗑️</button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -191,5 +245,15 @@ $datetime = new DateTime($rts);
         background: white;
         border-color: #c82333;
         color: #333333;
+    }
+
+    .delete-comment-form {
+        display: inline-block;
+        margin-left: 0.5rem;
+    }
+    .delete-comment-form .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1;
     }
 </style>
