@@ -24,8 +24,22 @@ $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 
+
 <div class="container">
+
     <div class="form-group">
+        <a href="index.php?page=home">
+            <button type="button" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Vissza a kezdőlapra
+            </button>
+        </a>
+    </div>
+
+    <div class="video-grid">
+    <?php if (!$videos) : ?>
+        <p>Ilyen című videó nem található!</p>
+    <?php else : ?>
     <?php foreach ($videos as $video): ?>
         <?php
         $rawTimestamp = $video['UPLOAD_TIME'];// pl. "2025-04-22 16:38:57.123456"
@@ -33,10 +47,10 @@ $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         ?>
         <div class="video-card">
             <a href="index.php?page=watch&id=<?= $video['VIDEO_ID'] ?>" class="page-link" data-page="watch" data-id="<?= $video['VIDEO_ID'] ?>">
-                <!--<div class="thumbnail">
-                    <img src="images/placeholder.jpg" alt="Video thumbnail">
-                    <div class="video-duration">2:30</div> ezt később ki lehet számolni vagy lekérni is
-                </div>-->
+                <div class="thumbnail">
+                    <img src="/images/elementor-placeholder-image.jpg" alt="Video thumbnail">
+                    <div class="video-duration">2:30</div>
+                </div>
                 <div class="video-info">
                     <h3 class="video-title"><?= htmlspecialchars($video['TITLE']) ?></h3>
                     <div class="video-meta">
@@ -48,11 +62,11 @@ $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
         </div>
     <?php endforeach; ?>
+    <?php endif; ?>
     </div>
 
-    <div class="form-group">
-        <a href="index.php?page=home"><button type="button" class="btn">Kezdőlapra vissza</button></a>
-    </div>
+
+
 
 
 </div>

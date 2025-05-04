@@ -25,6 +25,30 @@ $sql = "SELECT
 $stmt = $conn->query($sql);
 $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$stmt = $conn->prepare("SELECT playlist_id, user_id, list_name FROM playlists WHERE user_id = :userid ORDER BY list_name ASC");
+$stmt->bindParam(':userid', $user_id);
+$stmt->execute();
+$playlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// ─────────── Kedvelt videók lekérése ───────────
+$stmtLiked = $conn->prepare("
+    SELECT 
+      v.video_id,
+      v.title,
+      TO_CHAR(v.upload_time,'YYYY-MM-DD HH24:MI:SS') AS upload_time,
+      v.views,
+      u.username
+    FROM likes l
+    JOIN videos v ON l.video_id = v.video_id
+    JOIN app_users u ON v.uploader_user_id = u.user_id
+    WHERE l.user_id = :userid
+    ORDER BY l.like_time DESC
+");
+$stmtLiked->bindParam(':userid', $user_id, PDO::PARAM_INT);
+$stmtLiked->execute();
+$likedVideos = $stmtLiked->fetchAll(PDO::FETCH_ASSOC);
+
+
 require_once 'includes/new_password_view-inc.php';
 
 try{
@@ -86,7 +110,15 @@ catch(PDOException $e){
 ?>
 
 <div class="account-container">
-    <h1>Profilom</h1>
+
+    <div class="form-group">
+        <a href="index.php?page=home">
+            <button type="button" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Vissza a kezdőlapra
+            </button>
+        </a>
+    </div>
 
     <div class="user-profile">
         <div class="profile-header">
@@ -143,19 +175,61 @@ catch(PDOException $e){
                     <?php endif; ?>
                 </div>
 
-                <div id="liked-videos" class="tab-pane">
-                    <h3>Ezek tetszettek Neked</h3>
-
-                    <?php if (true): // Replace with actual check for liked videos ?>
-                        <p class="no-content">Nincs még kedvelt videód</p>
-                    <?php else: ?>
-                        <div class="video-grid">
-                            <!-- Liked videos would go here -->
+                <div class="tab-content">
+                    <div id="my-videos" class="tab-pane active">
+                        <div class="section-header">
+                            <h3>Lejátszási listáim</h3>
                         </div>
-                    <?php endif; ?>
-                </div>
 
-                <div id="settings" class="tab-pane">
+                        <?php if ($playlists): // Replace with actual check for user videos ?>
+                            <div class="playlist-grid">
+                                <?php if (!$playlists): ?>
+                                    <p>Még nincs lejátszási listád.</p>
+                                <?php else: ?>
+                                    <?php foreach ($playlists as $pl): ?>
+                                        <div class="playlist-card">
+                                            <a href="index.php?page=view_playlist&id=<?= $pl['PLAYLIST_ID'] ?>">
+                                                <div class="playlist-name"><?= htmlspecialchars($pl['LIST_NAME']) ?></div>
+                                            </a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        <?php else: ?>
+                            <p>Nincs még lejátszási listád videód.</p>
+                            <a href="index.php?page=playlists" class="btn page-link" data-page="upload">Új lejátszási lista</a>
+                        <?php endif; ?>
+                    </div>
+
+                    <div id="liked-videos" class="tab-content">
+                        <h3>Ezek tetszettek Neked</h3>
+
+                        <?php if (!empty($likedVideos)): ?>
+                            <div class="profile-videos">
+                                <?php foreach ($likedVideos as $video):
+                                    $dt = new DateTime($video['UPLOAD_TIME']);
+                                    ?>
+                                    <div class="video-card small">
+                                        <a href="index.php?page=watch&id=<?= $video['VIDEO_ID'] ?>">
+                                            <div class="video-info">
+                                                <h3 class="video-title"><?= htmlspecialchars($video['TITLE']) ?></h3>
+                                                <div class="video-meta">
+                                                    <span class="channel-name"><?= htmlspecialchars($video['USERNAME']) ?></span>
+                                                    <span>• <?= number_format($video['VIEWS']) ?> megtekintés</span>
+                                                    <span>• <?= $dt->format('Y-m-d') ?></span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="no-content">Még nincs kedvelt videód.</p>
+                        <?php endif; ?>
+                    </div>
+
+
+                    <div id="settings" class="tab-pane">
                     <h3>Jelszó megváltoztatása</h3>
 
                     <form action="" method="post" class="settings-form" onsubmit="return confirm('Biztosan megváltoztatod a jelszavad?');">
@@ -187,7 +261,7 @@ catch(PDOException $e){
     }
 
     .user-profile {
-        background: white;
+        background: whitesmoke;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         overflow: hidden;
@@ -197,7 +271,7 @@ catch(PDOException $e){
         display: flex;
         align-items: center;
         padding: 20px;
-        background: #f5f5f5;
+        background: white;
     }
 
     .profile-avatar {
@@ -231,6 +305,33 @@ catch(PDOException $e){
     h3 {
         margin-bottom: 15px;
         margin-top: 15px;
+    }
+
+    /* Videók és playlistek három oszlopos rácsban */
+    .profile-videos,
+    .playlist-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;           /* térköz a kártyák között */
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    /* Kisebb képernyőn 2 oszlop */
+    @media (max-width: 768px) {
+        .profile-videos,
+        .playlist-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    /* Mobilon 1 oszlop */
+    @media (max-width: 480px) {
+        .profile-videos,
+        .playlist-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
 </style>

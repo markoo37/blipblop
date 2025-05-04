@@ -39,7 +39,7 @@ header {
     padding: 15px 0;
 }
 
-.logo {
+/*.logo {
     font-size: 1.5rem;
     font-weight: bold;
     color: #ff4500;
@@ -47,23 +47,138 @@ header {
 
 .logo span {
     color: #333;
+}*/
+
+/* A logo alapállapota */
+
+/* ————————————————————————————————
+   .logo alapstílus
+————————————————————————————————— */
+.logo {
+    position: relative;
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;                      /* alap: sötétszürke */
+    overflow: hidden;
+    background-clip: text;
+    -webkit-background-clip: text;
+    transition: color 0.5s ease;
 }
+
+/* a piros rész külön span-ben */
+.logo span {
+    color: #e74c3c;                   /* alap: piros */
+    transition: color 0.5s ease;
+}
+
+/* ————————————————————————————————
+   gradient fill hover-ra
+————————————————————————————————— */
+.logo:hover {
+    color: transparent;               /* eltünteti az eredeti szöveget */
+    background-image: linear-gradient(
+            90deg,
+            #e74c3c 0%,
+            #e74c3c 50%,
+            #333 50%,
+            #333 100%
+    );
+    background-size: 200% 100%;
+    background-position: left center;
+    animation: fillText 0.8s forwards ease-out;
+}
+
+/* ————————————————————————————————
+   fénycsík (shine) pseudo-elem
+————————————————————————————————— */
+.logo::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -50%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255,255,255,0.5);
+    transform: skewX(-25deg);
+    opacity: 0;
+}
+
+.logo:hover::after {
+    animation: shine 1s forwards ease-out 0.2s;
+}
+
+/* ————————————————————————————————
+   keyframes
+————————————————————————————————— */
+@keyframes fillText {
+    to {
+        background-position: right center;
+    }
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+        opacity: 0;
+    }
+    50% {
+        left: 75%;
+        opacity: 1;
+    }
+    100% {
+        left: 150%;
+        opacity: 0;
+    }
+}
+
+
 
 .nav-links {
     display: flex;
     align-items: center;
 }
 
-.nav-links a {
-    margin-left: 25px;
-    font-weight: 500;
-    color: #555;
-    transition: color 0.2s;
+/* ————————————————————————————————
+   Navbar linkek (kivéve .logo és .btn.page-link) hover-effekt
+————————————————————————————————— */
+/* 1. Alap link-stílusok */
+.nav-links a.page-link:not(.btn),
+.nav-links .dropdown-content a {
+    position: relative;
+    color: #555;                    /* alap szürke */
+    text-decoration: none;
+    padding: 0.5em 0.75em;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.nav-links a:hover {
-    color: #ff4500;
+/* 2. Pseudo-elem az aláhúzásnak */
+.nav-links a.page-link:not(.btn)::after,
+.nav-links .dropdown-content a::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: #e74c3c;            /* kiemelő szín */
+    transition: width 0.3s ease, left 0.3s ease;
+    transform: translateX(-50%);
 }
+
+/* 3. Hover-állapot: aláhúzás és kis lift */
+.nav-links a.page-link:not(.btn):hover,
+.nav-links .dropdown-content a:hover {
+    color: #e74c3c;                 /* színváltás */
+    transform: translateY(-2px);    /* enyhe „emelkedés” */
+}
+
+.nav-links a.page-link:not(.btn):hover::after,
+.nav-links .dropdown-content a:hover::after {
+    width: 100%;
+    left: 50%;
+}
+
 
 .btn {
     display: inline-block;
@@ -97,7 +212,7 @@ main {
 }
 
 .video-card {
-    background: white;
+    background-color: white;
     /*border: 0.1px solid #d32f2f;*/
     border-radius: 8px;
     overflow: hidden;
@@ -162,23 +277,36 @@ main {
 }
 
 /* Categories */
-.categories {
-    display: flex;
-    overflow-x: auto;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+
+
+.categories .category {
+    position: relative;
+    display: inline-block;
+    padding: 0.5em 1em;
+    color: #333;              /* Alap szövegszín */
+    background: transparent;  /* Alap háttér */
+    overflow: hidden;
+    transition: color 0.5s ease;
+    cursor: pointer;
 }
 
-.category {
-    white-space: nowrap;
-    padding: 8px 16px;
-    margin-right: 10px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s;
+.categories .category::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0;
+    height: 100%;
+    background: #e74c3c;      /* Töltő szín (piros) */
+    transition: width 0.5s ease;
+    z-index: -1;              /* Háttér mögé */
+}
+
+.categories .category:hover::before {
+    width: 100%;              /* kitölti teljes szélességben */
+}
+
+.categories .category:hover {
+    color: #fff;              /* fehér szöveg a kontraszthoz */
 }
 
 .category.active {
@@ -187,9 +315,9 @@ main {
     border-color: #ff4500;
 }
 
-.category:hover:not(.active) {
+/*.category:hover:not(.active) {
     background: #f0f0f0;
-}
+}*/
 
 /* Forms */
 .form-container {
@@ -453,13 +581,49 @@ footer {
     white-space: nowrap;
 }
 
-.video-card {
+/*.video-card {
     display: inline-block;
     margin: 8px;
     font-family: sans-serif;
 
-    /* base styles… */
+    !* base styles… *!
+}*/
+
+/* 1. Alap .video-card beállítások */
+.video-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
+
+/* 2. A pseudo-elem, ami majd beúszik */
+.video-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(231, 76, 60, 0.2); /* halvány piros overlay */
+    transition: width 0.3s ease;
+    z-index: 0;
+}
+
+/* 3. Hover-állapot: kitölt és emel */
+.video-card:hover::before {
+    width: 100%;
+}
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* 4. Belső tartalom (videóinfo) legyen fölötte */
+.video-card .video-info {
+    position: relative;
+    z-index: 1;
+}
+
 
 .video-card.small {
     width: 180px;                 /* smaller overall width */
@@ -660,4 +824,144 @@ th {
     font-weight: 500;
     color: #333;
     margin-top: 0.75rem;
+}
+
+/* ————————————————————————————————
+   A video-cím középre és kisebbre hangolva
+————————————————————————————————— */
+
+/* 1. Parent konténer középre igazítja az inline-block gyereket */
+.video-player {
+    text-align: center;
+}
+
+/* 2. Magára a címsorra vonatkozó stílus */
+.video-player h1 {
+    display: inline-block;       /* csak a cím szélességét veszi fel */
+    margin: 0 0 1.5em;           /* fent 0, lent 1.5em térköz */
+    padding: 0.6em 1em;          /* picit kisebb padding */
+    font-size: 1.75rem;          /* kisebb alapméret */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* 3. További csökkenés mobilon */
+@media (max-width: 600px) {
+    .video-player h1 {
+        font-size: 1.5rem;
+        padding: 0.5em 0.8em;
+        margin-bottom: 1em;
+    }
+}
+
+/* ————————————————————————————————
+   “Vissza” gomb – back-feeling design
+————————————————————————————————— */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;                   /* távolság nyíl és szöveg között */
+    padding: 0.5em 1em;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;                  /* sötétszürke szöveg */
+    background: none;             /* áttetsző háttér */
+    border: 2px solid #333;       /* jól látható keret */
+    border-radius: 999px;         /* teljesen lekerekített */
+    cursor: pointer;
+    transition:
+            color 0.3s ease,
+            border-color 0.3s ease,
+            background-color 0.3s ease,
+            transform 0.2s ease;
+}
+
+/* Hover-állapot: visszafelé “ugrás” és színváltás */
+.btn-back:hover {
+    color: #e74c3c;               /* pirosra vált a szöveg és ikon */
+    border-color: #e74c3c;
+    background-color: rgba(231,76,60,0.05); /* halvány piros háttér */
+    transform: translateX(-3px) scale(1.02);
+}
+
+/* Fókusz-állapot: a keret erősödik */
+.btn-back:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(231,76,60,0.25);
+}
+
+/* Grid beállítások: rugalmasan töltse ki a helyet, min. 220px szélességű kártyákkal */
+.playlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Kártya stílus: fehér háttér, lekerekített sarkok, enyhe árnyék */
+.playlist-card {
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+/* Hover effekt: emelkedés és intenzívebb árnyék */
+.playlist-card:hover {
+    transform: translateY(-6px);
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Link teljes kártyára kiterjesztve, hogy ne csak a szövegre kattintható legyen */
+.playlist-card a {
+    background-color: white;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 1rem;
+}
+
+/* Lista név: arányos nagy betűméret, vastagabb betűstílus */
+.playlist-name {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #333;
+    margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Mobilon legyen keskenyebb padding, nagyobb érintési felület */
+@media (max-width: 480px) {
+    .playlist-card a {
+        padding: 0.75rem;
+    }
+    .playlist-name {
+        font-size: 1rem;
+    }
+}
+
+
+.filter-bar {
+    margin: 1rem 0;
+}
+.sort-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sort-form select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }

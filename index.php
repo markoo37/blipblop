@@ -28,7 +28,7 @@ $user_type = $is_logged_in ? $_SESSION['user_type'] : '';
 
                         <form method="GET" action="index.php" class="search-form">
                             <input type="hidden" name="page" value="search">
-                            <input type="search" name="q" placeholder="Keresés" required>
+                            <input type="search" name="q" placeholder="Keresés">
                             <button type="submit"><i class="fas fa-search"></i></button>
                         </form>
 
@@ -47,10 +47,11 @@ $user_type = $is_logged_in ? $_SESSION['user_type'] : '';
                     <?php endif; ?>
                 <?php endif; ?>
 
-                <a href="index.php" class="page-link" data-page="home">Kezdőlap</a>
+<!--                <a href="index.php" class="page-link" data-page="home">Kezdőlap</a>-->
                 <?php if ($is_logged_in): ?>
+                    <a href="index.php?page=playlists" class="page-link" data-page="playlists">Lejátszási listáim</a>
                     <div class="dropdown">
-                        <a href="#"><?php echo htmlspecialchars($username); ?><span class="arrow">&#9662;</span></a>
+                        <a href="#">🧑<?php echo htmlspecialchars($username); ?><span class="arrow">&#9662;</span></a>
                         <div class="dropdown-content">
 
                             <?php if ($user_type != 'admin'): ?>
@@ -123,6 +124,8 @@ $user_type = $is_logged_in ? $_SESSION['user_type'] : '';
                 'contact' => include 'pages/contact.php',
                 'search' => include 'pages/searchresult.php',
                 'watch' => include "pages/watch.php",
+                'playlists' => include "pages/playlists.php",
+                'view_playlist' => include "pages/playlist-edit.php",
                 default => include 'pages/404.php'
             };
         }
