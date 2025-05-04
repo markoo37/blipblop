@@ -80,7 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // A playlist videóinak lekérése
 $stmtVideos = $conn->prepare(
-    "SELECT v.video_id, v.title, TO_CHAR(v.upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_time, v.views, u.username
+    "SELECT v.video_id, v.title, v.thumbnail_path, v.duration_secs, TO_CHAR(v.upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_time,
+       v.views, u.username, (SELECT COUNT(*) FROM likes l WHERE l.video_id = v.video_id) AS like_count
      FROM videos v
      JOIN video_playlist_con vpc ON v.video_id = vpc.video_id
      JOIN app_users u ON v.uploader_user_id = u.user_id
@@ -114,12 +115,16 @@ $availableVideos = $stmtAvail->fetchAll(PDO::FETCH_ASSOC);
         <div class="video-grid">
             <?php foreach ($videos as $video):
                 $dt = new DateTime($video['UPLOAD_TIME']);
+                $secs = $video['DURATION_SECS'];
+                $m = floor($secs / 60);
+                $s = $secs % 60;
+                $formatted = sprintf('%d:%02d', $m, $s);
                 ?>
                 <div class="video-card">
                     <a href="index.php?page=watch&id=<?= $video['VIDEO_ID'] ?>">
                         <div class="thumbnail">
-                            <img src="/images/elementor-placeholder-image.jpg" alt="Video thumbnail">
-                            <div class="video-duration">2:30</div>
+                            <img src="<?= htmlspecialchars($video['THUMBNAIL_PATH'] ?: "/images/elementor-placeholder-image.jpg") ?>"   alt="Video thumbnail">
+                            <div class="video-duration"><?= htmlspecialchars($formatted) ?></div>
                         </div>
                         <div class="video-info">
                             <h3 class="video-title"><?= htmlspecialchars($video['TITLE']) ?></h3>
