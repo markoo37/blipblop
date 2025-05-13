@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // 2) Maga a playlist törlése (csak a sajátodat!)
         $delList = $conn->prepare(
-            "DELETE FROM playlists WHERE playlist_id = :playlist_id AND user_id = :user_id"
+            "BEGIN remove_video_from_playlist(:playlist_id, :user_id); END;"
         );
         $delList->bindParam(':playlist_id', $playlist_id, PDO::PARAM_INT);
         $delList->bindParam(':user_id',     $user_id,     PDO::PARAM_INT);

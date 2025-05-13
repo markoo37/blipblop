@@ -14,7 +14,7 @@ function get_username(object $pdo, string $username)
 }
 
 function register_user(object $pdo, string $username, string $password){
-    $query = "INSERT INTO app_users (username, pword, type_id) VALUES(:username, :password, :type_id)";
+    $query = "BEGIN register_user(:username, :password, :type_id); END;";
     $stmt = $pdo->prepare($query);
     $user_type = 1;
     $stmt->bindParam(':username', $username);

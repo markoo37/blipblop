@@ -44,12 +44,13 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             $durationSecs = (int)round(floatval($duration));
 
             // 5) DB-be beszúrás
-            $stmt = $conn->prepare("
+            $stmt = $conn->prepare("BEGIN insert_video(:user_id, :title, :cat, :path, :dur); END;");
+            /*$stmt = $conn->prepare("
                 INSERT INTO videos 
-                  (uploader_user_id, title, upload_time, views, category_id, file_path, duration_secs)
+                  (uploader_user_id, title, views, category_id, file_path, duration_secs)
                 VALUES
-                  (:user_id, :title, SYSTIMESTAMP, 0, :cat, :path, :dur)
-            ");
+                  (:user_id, :title, 0, :cat, :path, :dur)
+            ");*/
             $stmt->execute([
                 ':user_id'   => $_SESSION['user_id'],
                 ':title' => $_POST['title'],

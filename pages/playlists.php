@@ -7,15 +7,28 @@ $userid = $_SESSION['user_id'] ?? "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_playlist'])) {
     $name = trim($_POST['list_name']);
     if ($name !== '') {
-        $st = $conn->prepare(
-            "INSERT INTO playlists (user_id, list_name) VALUES (:user_id, :list_name)"
-        );
-        $st->bindParam(':user_id', $userid, PDO::PARAM_INT);
-        $st->bindParam(':list_name', $name, PDO::PARAM_STR);
-        $st->execute();
-        // oldal újratöltése, hogy az új lista is megjelenjen
-        header("Location: index.php?page=playlists");
-        exit;
+        try{
+            $st = $conn->prepare(
+                "BEGIN create_playlist(:user_id, :list_name); END;"
+            );
+            $st->bindParam(':user_id', $userid, PDO::PARAM_INT);
+            $st->bindParam(':list_name', $name, PDO::PARAM_STR);
+            $st->execute();
+            // oldal újratöltése, hogy az új lista is megjelenjen
+            header("Location: index.php?page=playlists");
+            exit;
+        }
+        catch (PDOException $e){
+            $code = $e->errorInfo[1] ?? null;
+            $msg = $e->errorInfo[2] ?? $e->getMessage();
+            if ($code == 20010){
+                echo '<p class="error-text">Már létezik ilyen nevű listád!</p>';
+            }
+            else{
+                throw $e;
+            }
+
+        }
     }
 }
 
@@ -47,7 +60,6 @@ $playlists = $stmt->fetchAll(PDO::FETCH_ASSOC);
             Létrehozás
         </button>
     </form>
-    <h1>Lejátszási listáid:</h1>
     <h1>Lejátszási listáid:</h1>
     <!-- ─────────── Létező listák megjelenítése ─────────── -->
     <div class="playlist-grid">

@@ -63,12 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_comment']) && isset($_SESSION['user_id'])) {
         $cid = (int)$_POST['delete_comment'];
         // csak a saját komment törlése
-        $delC = $conn->prepare(
-            "DELETE FROM comments 
-             WHERE comment_id = :comment_id 
-               AND user_id = :user_id 
-               AND video_id = :video_id"
-        );
+        $delC = $conn->prepare("BEGIN delete_comment(:comment_id, :user_id, :video_id); END;");
         $delC->execute([
             ':comment_id' => $cid,
             ':user_id' => $_SESSION['user_id'],
@@ -95,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        $del = $conn->prepare("DELETE FROM videos WHERE video_id = :video_id");
+        $del = $conn->prepare("BEGIN delete_video(:video_id); END;");
         $del->bindParam(':video_id', $video_id, PDO::PARAM_INT);
         $del->execute();
         header("Location: index.php?page=home");
@@ -106,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Lájk vagy unlik
         $userId = $_SESSION['user_id'];
         if ($_POST['like_action'] === 'like' && !$userLiked) {
-            $sql = "INSERT INTO likes (user_id, video_id, like_time) VALUES (:user_id, :video_id, SYSTIMESTAMP)";
+            $sql = "INSERT INTO likes (user_id, video_id) VALUES (:user_id, :video_id)";
             $st = $conn->prepare($sql);
             $st->bindParam(':user_id', $userId);
             $st->bindParam(':video_id', $video_id);
@@ -122,8 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Új komment beszúrása
         $comment_text = $_POST['comment_content'];
         $comment_upload_sql = "
-        INSERT INTO comments (user_id, video_id, comment_time, comment_text)
-        VALUES (:user_id, :video_id, SYSTIMESTAMP, :comment_text)";
+        INSERT INTO comments (user_id, video_id, comment_text)
+        VALUES (:user_id, :video_id, :comment_text)";
         $uploadcomment_stmt = $conn->prepare($comment_upload_sql);
         $uploadcomment_stmt->bindParam(':user_id', $userId);
         $uploadcomment_stmt->bindParam(':video_id', $video_id);
