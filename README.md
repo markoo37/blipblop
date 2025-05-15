@@ -30,6 +30,8 @@ Ahhoz, hogy használni tudd, létre kell hozni egy fájlt, amit '.env' néven ke
 
 4. Ezen a létrehozott sqldeveloper fiókon futtatjuk a megadott script.sql-t, ami létrehozza a táblákat és a példa rekordokat.
 
+5. A projekt megfelelő működéséhez telepíteni kell az FFmpeg csomagot: https://www.gyan.dev/ffmpeg/builds/ innen a 'release builds' résznél a 'ffmpeg-release-essentials.zip'-t kell telepíteni
+
 5. A weboldalt a PhpStorm-ból indítottuk, azon belül is az index.php fájlt kell vagy a Built-in Preview-val, vagy (leginkább) Google Chrome böngészőben.
 
 - Segítségkéréshez kérem írjon emailt: spitz.marko@gmail.com
